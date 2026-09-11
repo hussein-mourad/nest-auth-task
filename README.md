@@ -30,6 +30,7 @@ bun run dev
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:3001/api
 - Swagger docs: http://localhost:3001/api/docs
+- Mongo Express: http://localhost:8081
 
 ## Scripts
 
