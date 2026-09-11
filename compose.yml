@@ -1,17 +1,18 @@
 services:
   # ------ MongoDB ------
   mongodb:
-    image: mongodb/mongodb-community-server:8.0-ubuntu2204
+    image: mongo:7.0
     container_name: mongodb
     ports:
       - "27017:27017"
     volumes:
       - db-data:/data/db
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh mongodb://localhost:27017 --quiet
-      interval: 3s
-      retries: 5
-      start_period: 1s
+      test: echo 'db.runCommand("ping").ok' | mongosh mongodb://localhost:27017/test --quiet
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   mongo-express:
     image: mongo-express:1.0
