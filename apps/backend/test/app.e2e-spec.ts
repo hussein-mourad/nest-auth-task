@@ -1,22 +1,27 @@
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import type { INestApplication } from '@nestjs/common';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import request from 'supertest';
-import { App } from 'supertest/types';
+import type { App } from 'supertest/types';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { AppModule } from '../src/app.module.js';
-import { setupApp } from '../src/setup-app.js';
 
 describe('Auth (e2e)', () => {
   let app: INestApplication<App>;
-  let mongo: MongoMemoryServer;
+  let mongo: MongoMemoryServer | null = null;
 
   const user = { email: 'test@example.com', name: 'Test User', password: 'Password1!' };
 
   beforeAll(async () => {
-    mongo = await MongoMemoryServer.create();
-    process.env.MONGODB_URI = mongo.getUri();
     process.env.JWT_SECRET = 'test-secret';
+    process.env.JWT_EXPIRES = '86400';
+
+    if (!process.env.MONGODB_URI) {
+      mongo = await MongoMemoryServer.create();
+      process.env.MONGODB_URI = mongo.getUri();
+    }
+    const { AppModule } = await import('../src/app.module.js');
+    const { setupApp } = await import('../src/setup-app.js');
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -29,7 +34,7 @@ describe('Auth (e2e)', () => {
 
   afterAll(async () => {
     await app.close();
-    await mongo.stop();
+    await mongo?.stop();
   });
 
   it('signs up a user and sets a session cookie', async () => {
