@@ -1,5 +1,5 @@
 import { plainToInstance } from 'class-transformer';
-import { IsNotEmpty, IsOptional, IsString, validateSync } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, Matches, validateSync } from 'class-validator';
 
 class EnvironmentVariables {
   @IsOptional()
@@ -11,11 +11,11 @@ class EnvironmentVariables {
   JWT_SECRET!: string;
 
   @IsOptional()
-  @IsString()
+  @Matches(/^\d+$/, { message: 'JWT_EXPIRES must be a number of seconds' })
   JWT_EXPIRES?: string;
 
   @IsOptional()
-  @IsString()
+  @Matches(/^\d+$/, { message: 'PORT must be a number' })
   PORT?: string;
 
   @IsOptional()
